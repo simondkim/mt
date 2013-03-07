@@ -1,0 +1,42 @@
+HW 7 Report
+
+Simon Kim
+Kevin Luo
+
+
+Becuase we used a wikipedia entry for our text, it uses very passive formal language. "is considered", "is located",
+
+
+
+This rule is based on Korean being an SOV language whereas we are translating to English which is an SVO language. So whenever we encounter POS object (noun) followed by a verb, we will reverse the order of the two words.
+
+2. When you are reordering the verb, consider it's relative position to adverbs to make sure to place the verb right after the adverb.
+
+3. When you are reordering the noun, consider it's relative position to adjectives to make sure to place the noun after the adjectives.
+
+
+4. to check if any noun is really a noun functioning as a subject, we check that it doesn't have apostrophe s, which would make it a adjective modifier.
+
+
+if the verb is followed by a preposition, move that with the verb too.
+
+
+if there's an apostrophe or parentheses boundary, keep reordering within the boundaries. (PROBABLY NOT THE KIND OF RULE THEY ARE LOOKING FOR)
+
+
+we use commas for boundaries for reordering, and also iteratively rearrange verb placement similar to a tree structure.
+
+the last verb that occurs in the sentence will almost always apply to the beginning of the sentence, and thus we will reorder as such.
+Take the sentence, splice out the last verb which will almost always apply to the beginning. Then we separate the sentence into the smallest sentence phrases and reorder within these phrases, and then join them back together.
+
+if two verbs next to each other, treat them as one (this comes up for the phrase 'is considered')
+
+
+
+---- CHALLENGES -----
+the words that come after a korean word can change the form of that korean word, making translating directly very difficult, because it's hard to have a word-to-word dictionary mapping.
+
+Another problem we encountered is the sentence 23% is Asian, because a POS can't know to tag a number like 23% as functioning as a subject. The tag CD doesn't help us in reordering.
+
+
+In Korean there's often no direct translation of a word, but we must first distill it to a simpler form that does have a translation.
