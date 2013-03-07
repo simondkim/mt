@@ -2,11 +2,13 @@ import re
 import urllib
 import json
 import urllib2
+from nltk.tag.stanford import POSTagger
 
 class MT:
 
     dictionary = dict()
     raw_translation = ""
+    st = POSTagger('stanford-postagger/models/english-bidirectional-distsim.tagger', path_to_jar='stanford-postagger/stanford-postagger.jar')
 
     def __init__(self, text):
 
@@ -31,12 +33,13 @@ class MT:
 
     def tagPOS(self):
         """Runs Stanford POS tagger on raw translation"""
-        #TODO
-        pass
-
+        #for each sentence, run the tagger
+        tagged = self.st.tag(self.raw_translation.split())
+        
 if __name__ == '__main__':
     dict = 'dict.txt'
     text = 'text.txt'
 
     result = MT(dict)
     result.translate(text)
+    result.tagPOS()
