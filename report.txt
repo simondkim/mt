@@ -30,6 +30,8 @@ In Korean, location is written from largest body to smallest, rather than smalle
 10. Insert article after "is"
 In Korean, simple helping verbs are bundled together within a single word with the object (noun). In our dictionary this behavior is translated as such. To add fluency, we check for cases in the translated sentence where "is" is followed by a singular noun, and insert the article "a" in between.
 
+11. In Korean, multiple sentences can be appended by a comma, so in looking for the subject for a verb to follow, we see if there exists a 'sub-sentence'.
+
 if there's an apostrophe or parentheses boundary, keep reordering within the boundaries. (PROBABLY NOT THE KIND OF RULE THEY ARE LOOKING FOR)
 
 

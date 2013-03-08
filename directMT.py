@@ -79,18 +79,77 @@ class MT:
             words, tags = result.fix_verb_preposition_pos(words, tags)
             words, tags = result.improve_pos2(words, tags)
             words, tags = result.reorder_verb(words, tags)
+            words, tags = result.reorder_verb_prep_object(words, tags)
             words, tags = result.insert_missing_articles(words, tags)
-            words, tags = result.reorder_verb_object(words, tags)
 
             # print reordered results
             print ' '.join(words)
             print ' '.join(tags)                
-            exit()
+
+    def find_noun_chunk_from_behind(self, end_index, tags):
+        start_index = end_index
+        while start_index >= 0:
+            prev_tag = tags[start_index - 1]
+            if (prev_tag == 'NN' or prev_tag == 'NNS' or prev_tag == 'NNP' or prev_tag == 'NNPS' or
+                prev_tag == 'JJ' or prev_tag == 'JJR' or prev_tag == 'JJS' or prev_tag == 'RB' or
+                prev_tag == 'RBR' or prev_tag == 'RBS'):
+                start_index -= 1
+            else:
+                break
+        return start_index, end_index
+
+    def find_verb_chunk_from_behind(self, end_index, tags):
+        start_index = end_index
+        while start_index >= 0:
+            prev_tag = tags[start_index - 1]
+            if (prev_tag == 'VB' or prev_tag == 'VBD' or prev_tag == 'VBG'
+                or prev_tag == 'VBN' or prev_tag == 'VBP' or prev_tag == 'VBZ'):
+                start_index -= 1
+            else:
+                break
+        return start_index
+
+    # if the sentence has comma followed by adverb or modal (e.g. , furthermore), then treat it as a sub-sentence
+    def find_start_sub_sentence(self, tags):
+        start_index = 0
+        for i, tag in enumerate(tags):
+            if tag == ',':
+                if tags[i + 1] == 'RB' or tags[i + 1] == 'MD':
+                    start_index = i + 2
+        return start_index
 
     # rule 8: if a noun is followed by verb and preposition,
     # then reorder it so that it is verb + preposition + noun (object)
-    def reorder_verb_object(self, words, tags):
-
+    def reorder_verb_prep_object(self, words, tags):
+        noun_min_index = 0
+        print noun_min_index
+        for i, tag in enumerate(tags):
+            if (tag == 'VB' or tag == 'VBD' or tag == 'VBG'
+                    or tag == 'VBN' or tag == 'VBP' or tag == 'VBZ'):
+                if i + 1 < len(tags):
+                    if tags[i + 1] == 'IN' or tags[i + 1] == 'TO':
+                        if i - 1 >= 0:
+                            noun_start_index, noun_end_index = self.find_noun_chunk_from_behind(i - 1, tags)
+                            noun_start_index = (noun_min_index if noun_start_index < noun_min_index
+                                                else noun_start_index)
+                            print "*************************"
+                            # print words
+                            # print tags
+                            print noun_start_index
+                            print noun_end_index
+                            print "*************************"
+                            verb_prep_word = words[i: i + 2]
+                            verb_prep_tag = tags[i: i + 2]
+                            words[i: i + 2] = ''
+                            tags[i: i + 2] = ''
+                            words[noun_start_index:noun_start_index] = verb_prep_word
+                            tags[noun_start_index:noun_start_index] = verb_prep_tag
+                            noun_min_index = i + 2
+                            # print "--------------"
+                            # print words
+                            # print tags
+                            # print noun_min_index
+                            # print "--------------"
         return words, tags
 
     # rule 6: fixes year by appending 'in' before the word
@@ -99,7 +158,6 @@ class MT:
         while i < len(words):
             if tags[i] == 'CD':
                 if len(words[i]) == 4:
-                    print "len"
                     words.insert(i, "in")
                     tags.insert(i, "IN")
                     i += 1
@@ -143,7 +201,7 @@ class MT:
     def fix_verb_preposition_pos(self, words, tags):
         for i, tag in enumerate(tags):
             if i < len(tags) - 1:
-                if tags[i] == 'IN':
+                if tags[i] == 'IN' or tags[i] == 'TO':
                     verb_tag = tags[i + 1]
                     verb_word = words[i + 1]
                     if verb_tag == 'VBN' or (verb_tag == 'JJ' and "ed" in verb_word):
@@ -164,24 +222,43 @@ class MT:
                     del words[country_index + 2]
                     del tags[country_index + 2]
                 words[country_index] = state
-                words.insert(country_index + 1, ',')
-                tags[country_index + 2] = tags[country_index]
-                words[country_index + 2] = "USA"
+                # words.insert(country_index + 1, ',')
+                tags[country_index + 1] = tags[country_index]
+                words[country_index + 1] = "USA"
                 tags[country_index] = state_tag
-                tags.insert(country_index + 1, ',')
+                # tags.insert(country_index + 1, ',')
         return words, tags
 
     def insert_missing_articles(self, words, tags):
         i = 0
         while i < len(words):
             if words[i] == "is":
-                if tags[i+1] == "NN" or tags[i+1] == "NNP":
-                    print "INSERTING ARTICLE"
-                    words.insert(i+1, "a")
-                    tags.insert(i+1, "DT")
-                    i += 1
+                if i + 1 < len(words):
+                    if tags[i + 1] == "NN" or tags[i + 1] == "NNP":
+                        words.insert(i + 1, "a")
+                        tags.insert(i + 1, "DT")
+                        i += 1
             i += 1
         return words, tags
+
+    # helper function to find the biggest consecutive chuck of nouns
+    def find_noun_chunk(self, start_index, tags):
+        # check if subject is present in the sentence
+        end_index = start_index
+        # find the end index of subject
+        if (tags[0] == 'NN' or tags[0] == 'NNS' or tags[0] == 'NNP' or tags[0] == 'NNPS' or
+                    tags[0] == 'JJ' or tags[0] == 'JJR' or tags[0] == 'JJS' or tags[0] == 'RB' or
+                    tags[0] == 'RBR' or tags[0] == 'RBS'):
+            print "***"
+            while end_index < len(tags) - 1:
+                if (tags[end_index + 1] == 'NN' or tags[end_index + 1] == 'NNS' or
+                        tags[end_index + 1] == 'NNP' or tags[end_index + 1] == 'NNPS'):
+                    end_index += 1
+                else:
+                    break
+        else:
+            start_index = -1
+        return start_index, end_index
 
     # rule 1: bring the verb at the end of sentence to the front
     def reorder_verb(self, words, tags):
@@ -190,57 +267,34 @@ class MT:
             return words, tags
 
         # check if subject is present in the sentence
-        subject_start_index = 0
-        subject_end_index = 0
-
-        # find the end index of subject
-        if tags[0] == 'NNP':
-            while subject_end_index < len(tags) - 1:
-                if tags[subject_end_index + 1] == 'NNP':
-                    subject_end_index += 1
-                else:
-                    break
-
-        print "subj start index: %d" % subject_start_index
-        print "subj end index: %d" % subject_end_index
+        subject_start_index = self.find_start_sub_sentence(tags)
+        subject_start_index, subject_end_index = self.find_noun_chunk(subject_start_index, tags)
 
         # see if verb is present at the end of sentence
         verb_start_index = -1
-        verb_end_index = len(tags) - 1
-        for tag in reversed(tags):
+        for i, tag in reversed(list(enumerate(tags))):
             if tag == 'VB' or tag == 'VBD' or tag == 'VBG' or tag == 'VBN' or tag == 'VBP' or tag == 'VBZ':
-                verb_start_index = tags.index(tag)
+                verb_start_index = self.find_verb_chunk_from_behind(i, tags)
                 break
-        subject_end_index = (0 if subject_end_index == 0 else subject_end_index + 1)
+        subject_end_index = (0 if subject_start_index == -1 else subject_end_index + 1)
+        print subject_start_index
+        print subject_end_index
+
         if verb_start_index == -1:
-            print "NO VERBS FOUND, NO REORDERING OF VERBS TO BE DONE"
             return words, tags
 
-    # take out middle part of the sentence before reordering verb
-        middle_words = words[subject_end_index: verb_start_index]
-        middle_tags = tags[subject_end_index: verb_start_index]
-
         # move the verb to the front (after subject if subject is present)
-        verb_words = words[verb_start_index:verb_end_index]
-        words[verb_start_index:verb_end_index] = ''
+        # change the sentence's last word following the verb to be a sentinel to mean the end of verb.
+        tags[len(tags) - 2] = 'None'
+        verb_words = words[verb_start_index:len(words) - 1]
+        print verb_words
+        words[verb_start_index:len(words)] = ''
         words[subject_end_index:subject_end_index] = verb_words
-        verb_tags = tags[verb_start_index:verb_end_index]
-        tags[verb_start_index:verb_end_index] = ''
+        verb_tags = tags[verb_start_index:len(tags) - 1]
+        tags[verb_start_index:len(tags)] = ''
         tags[subject_end_index:subject_end_index] = verb_tags
+        print words
 
-        # print middle_words
-
-        # if not verb_start_index == -1:
-        #     middle_words, middle_tags = result.reorder_verb(middle_words, middle_tags)
-
-        # middle_words_start_index = subject_end_index + len(verb_tags)
-        # words[middle_words_start_index:len(words)] = ''
-        # tags[middle_words_start_index:len(tags)] = ''
-        # words[middle_words_start_index:middle_words_start_index] = middle_words
-        # tags[middle_words_start_index:middle_words_start_index] = middle_tags
-
-        # print ' '.join(words)
-        # print ' '.join(tags)
         return words, tags
 
 
@@ -254,7 +308,6 @@ if __name__ == '__main__':
 
     result = MT(dict)
     result.translate(text)
-    # print result.sentences
     result.tagPOS()
     result.reorder()
     # result.write()
