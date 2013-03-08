@@ -29,7 +29,7 @@ class MT:
         """Reads text in and stores raw translation"""
 
         # translating sentence by sentence
-        for paragraph in open ('text.txt', "r"):
+        for paragraph in open (text, "r"):
             paragraph = paragraph[:-2]
             sentences = paragraph.split('. ')
             for sentence in sentences:
@@ -57,28 +57,125 @@ class MT:
             self.tagged_sentences.append(tagged)
 
     def reorder(self):
-        count = 0
+
         for sentence in self.tagged_sentences:
-            self.final_output += ' '.join(self.sentences[count])
+            words = [tuple[0] for tuple in sentence]
+            self.final_output += ' '.join(words)
             self.final_output += "\n"
-            print ' '.join(self.sentences[count])
+            print ' '.join(words)
             tags = [tuple[1] for tuple in sentence]
             self.final_output += ' '.join(tags)
             self.final_output += "\n"
             print ' '.join(tags)
-            count += 1
 
-    def write(self):
-        f = open('final.txt', 'w+')
+            result.improve_pos(words, tags)
+            result.reorder_verb(words, tags)
+            result.fix_verb_adverb_pos(words, tags)
+            result.fix_verb_preposition_pos(words, tags)
+
+            # print reordered results
+            print ' '.join(words)
+            print ' '.join(tags)
+
+    # rule 4: word is not a noun if it has apostrophe s in it. should be adjective.
+    def improve_pos(self, words, tags):
+        for i, word in enumerate(words):
+            if "'s" in word:
+                tags[i] = 'JJ'
+
+    # rule 2: verb should go after the adverb if they are adjacent
+    def fix_verb_adverb_pos(self, words, tags):
+        for i, tag in enumerate(tags):
+            if i < len(tags) - 1:
+                if (tags[i] == 'VB' or tags[i] == 'VBD' or tags[i] == 'VBG'
+                    or tags[i] == 'VBN' or tags[i] == 'VBP' or tags[i] == 'VBZ'):
+                    adv_tag = tags[i + 1]
+                    adv_word = words[i + 1]
+                    if adv_tag == 'RB' or adv_tag == 'RBR' or adv_tag == 'RBS':
+                        tags[i + 1] = tags[i]
+                        tags[i] = adv_tag
+                        words[i + 1] = words[i]
+                        words[i] = adv_word
+
+    # rule 5: verb (VBN) + preposition
+    def fix_verb_preposition_pos(self, words, tags):
+        for i, tag in enumerate(tags):
+            if i < len(tags) - 1:
+                if tags[i] == 'IN':
+                    verb_tag = tags[i + 1]
+                    verb_word = words[i + 1]
+                    if verb_tag == 'VBN':
+                        tags[i + 1] = tags[i]
+                        tags[i] = verb_tag
+                        words[i + 1] = words[i]
+                        words[i] = verb_word
+
+    # rule 1: bring the verb at the end of sentence to the front
+    def reorder_verb(self, words, tags):
+
+        if len(words) == 0 or len(tags) == 0:
+            return
+
+        # check if subject is present in the sentence
+        subject_start_index = 0
+        subject_end_index = 0
+
+        # find the end index of subject
+        if tags[0] == 'NNP':
+            while subject_end_index < len(tags) - 1:
+                if tags[subject_end_index + 1] == 'NNP':
+                    subject_end_index += 1
+                else:
+                    break
+
+        print "subj start index: %d" % subject_start_index
+        print "subj end index: %d" % subject_end_index
+
+        # see if verb is present at the end of sentence
+        verb_start_index = -1
+        verb_end_index = len(tags) - 1
+        for tag in reversed(tags):
+            if tag == 'VB' or tag == 'VBD' or tag == 'VBG' or tag == 'VBN' or tag == 'VBP' or tag == 'VBZ':
+                verb_start_index = tags.index(tag)
+                break
+        print "verb start index: %d" % verb_start_index
+        print "verb end index: %d" % verb_end_index
+
+        subject_end_index = (0 if subject_end_index == 0 else subject_end_index + 1)
+
+        # take out middle part of the sentence before reordering verb
+        middle_words = words[subject_end_index + 1: verb_start_index]
+        middle_tags = tags[subject_end_index + 1: verb_start_index]
+
+        # move the verb to the front (after subject if subject is present)
+        verb_words = words[verb_start_index:verb_end_index]
+        words[verb_start_index:verb_end_index] = ''
+        words[subject_end_index:subject_end_index] = verb_words
+        verb_tags = tags[verb_start_index:verb_end_index]
+        tags[verb_start_index:verb_end_index] = ''
+        tags[subject_end_index:subject_end_index] = verb_tags
+
+        print "------------"
+        print middle_words
+        print middle_tags
+        print "------------"
+
+        print "verb index: %d" % verb_start_index
+
+        if not verb_start_index == -1:
+            result.reorder_verb(middle_words, middle_tags)
+
+def write(self):
+        f = open('final2.txt', 'w+')
         f.write(self.final_output)
 
 if __name__ == '__main__':
     dict = 'output.txt'
-    text = 'text.txt'
+    text = 'text2.txt'
 
     result = MT(dict)
     result.translate(text)
     # print result.sentences
     result.tagPOS()
     result.reorder()
-    result.write()
+    # result.write()

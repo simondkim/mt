@@ -8,17 +8,15 @@ Becuase we used a wikipedia entry for our text, it uses very passive formal lang
 
 
 
-This rule is based on Korean being an SOV language whereas we are translating to English which is an SVO language. So whenever we encounter POS object (noun) followed by a verb, we will reverse the order of the two words.
+1. This rule is based on Korean being an SOV language whereas we are translating to English which is an SVO language. So whenever we encounter POS object (noun) followed by a verb, we will reverse the order of the two words.
 
 2. When you are reordering the verb, consider it's relative position to adverbs to make sure to place the verb right after the adverb.
 
 3. When you are reordering the noun, consider it's relative position to adjectives to make sure to place the noun after the adjectives.
 
-
 4. to check if any noun is really a noun functioning as a subject, we check that it doesn't have apostrophe s, which would make it a adjective modifier.
 
-
-if the verb is followed by a preposition, move that with the verb too.
+5. if the verb is followed by a preposition, move that with the verb too.
 
 
 if there's an apostrophe or parentheses boundary, keep reordering within the boundaries. (PROBABLY NOT THE KIND OF RULE THEY ARE LOOKING FOR)
