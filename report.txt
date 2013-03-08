@@ -30,6 +30,11 @@ Take the sentence, splice out the last verb which will almost always apply to th
 if two verbs next to each other, treat them as one (this comes up for the phrase 'is considered')
 
 
+6. Reorder location (state, country)
+In Korean, location is written from largest body to smallest, rather than smallest to largest in English. Also in Korean, for state locations, the word state is always appended right after, as in California state. So when we encounter USA followed by state name followed by state, we reorder, and remove the word state for the English translation.
+
+*Additional Notes
+We considered that after applying each rule to a sentence, to retag the entire sentence. However this would quickly become really messy and time consuming because it would be unclear when to stop.
 
 ---- CHALLENGES -----
 the words that come after a korean word can change the form of that korean word, making translating directly very difficult, because it's hard to have a word-to-word dictionary mapping.

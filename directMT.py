@@ -20,6 +20,10 @@ class MT:
             words = line.split()
             if len(words) > 1:
                 self.dictionary[words[0]] = words[1:]
+        
+        self.states = []
+        for line in open('states.txt', 'r'):
+            self.states.append(line[:-1])
 
     def print_dict(self):
         for key in self.dictionary.keys():
@@ -72,11 +76,11 @@ class MT:
             result.fix_verb_adverb_pos(words, tags)
             result.fix_verb_preposition_pos(words, tags)
             result.reorder_verb(words, tags)
-
+            result.reorder_location(words)
 
             # print reordered results
             print ' '.join(words)
-            print ' '.join(tags)
+            print ' '.join(tags)                
 
     # rule 4: word is not a noun if it has apostrophe s in it. should be adjective.
     def improve_pos(self, words, tags):
@@ -173,7 +177,17 @@ class MT:
         if not verb_start_index == -1:
             result.reorder_verb(middle_words, middle_tags)
 
-
+    def reorder_location(self, words):
+        if "USA" in words:
+            country_index = words.index("USA")
+            if country_index < len(words) - 1 and words[country_index+1] in self.states:
+                #state is after country, reorder
+                state = words[country_index+1]
+                if words[country_index+2] == "state":
+                    del words[country_index+2]
+                words[country_index] = state
+                words.insert(country_index+1, ',')
+                words[country_index+2] = "USA"
 
 def write(self):
         f = open('final2.txt', 'w+')
