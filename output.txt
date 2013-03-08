@@ -29,7 +29,7 @@
 꼽히며	is considered
 학부	undergraduate
 합격률	acceptance rate
-기준으로	standard
+기준으로	by the standard of
 미국에서	in America
 두번째로	second
 입학하기	admission
@@ -46,7 +46,7 @@
 대학의	university
 전통적인	traditional
 진지함에다	serious
-캘리포니아	california
+캘리포니아	California
 특유의	unique
 자유	free
 분방함과	wild
