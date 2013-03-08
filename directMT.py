@@ -77,9 +77,9 @@ class MT:
             words, tags = result.fix_verb_preposition_pos(words, tags)
             words, tags = result.improve_pos2(words, tags)
             words, tags = result.fix_adj_pos(words, tags)
+            words, tags = result.insert_missing_articles(words, tags)
             words, tags = result.reorder_verb(words, tags)
             words, tags = result.reorder_verb_prep_object(words, tags)
-            words, tags = result.insert_missing_articles(words, tags)
             words, tags = result.fix_verb_adverb_pos(words, tags)
             words, tags = result.modal_verb(words, tags)
             if (tags[0] == 'VB' or tags[0] == 'VBD' or tags[0] == 'VBG'
@@ -243,7 +243,7 @@ class MT:
         while i < len(words):
             if words[i] == "is":
                 if i + 1 < len(words):
-                    if tags[i + 1] == "NN" or tags[i + 1] == "NNP":
+                    if tags[i + 1] == "NN" or tags[i + 1] == "NNP" or tags[i + 1] == "None" or (tags[i + 1] == "JJ" and i + 2 < len(words) and (tags[i + 2] == "NN" or tags[i + 2] == "None")):
                         words.insert(i + 1, "a")
                         tags.insert(i + 1, "DT")
                         i += 1
