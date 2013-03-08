@@ -251,8 +251,10 @@ class MT:
                     tags[0] == 'RBR' or tags[0] == 'RBS'):
             print "***"
             while end_index < len(tags) - 1:
-                if (tags[end_index + 1] == 'NN' or tags[end_index + 1] == 'NNS' or
-                        tags[end_index + 1] == 'NNP' or tags[end_index + 1] == 'NNPS'):
+                if (tags[end_index + 1] == 'NN' or tags[end_index + 1] == 'NNS' or tags[end_index + 1] == 'NNP'
+                    or tags[end_index + 1] == 'NNPS' or tags[end_index + 1] == 'JJ' or tags[0] == 'JJR'
+                    or tags[end_index + 1] == 'JJS' or tags[end_index + 1] == 'RB'
+                    or tags[end_index + 1] == 'RBR' or tags[end_index + 1] == 'RBS' or tags[end_index + 1] == ','):
                     end_index += 1
                 else:
                     break
@@ -269,6 +271,10 @@ class MT:
         # check if subject is present in the sentence
         subject_start_index = self.find_start_sub_sentence(tags)
         subject_start_index, subject_end_index = self.find_noun_chunk(subject_start_index, tags)
+        print "&&&&&&&&&&&&&&&&&&&&&&&&&&"
+        print subject_start_index
+        print subject_end_index
+        print "&&&&&&&&&&&&&&&&&&&&&&&&&&"
 
         # see if verb is present at the end of sentence
         verb_start_index = -1
