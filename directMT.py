@@ -72,21 +72,37 @@ class MT:
             self.final_output += "\n"
             print ' '.join(tags)
 
-            result.improve_pos(words, tags)
-            result.fix_verb_adverb_pos(words, tags)
-            result.fix_verb_preposition_pos(words, tags)
-            result.reorder_verb(words, tags)
-            result.reorder_location(words)
+            words, tags = result.improve_pos(words, tags)
+            words, tags = result.fix_year(words, tags)
+            words, tags = result.reorder_location(words, tags)
+            words, tags = result.fix_verb_adverb_pos(words, tags)
+            words, tags = result.fix_verb_preposition_pos(words, tags)
+            # words, tags = result.reorder_verb(words, tags)
 
             # print reordered results
             print ' '.join(words)
             print ' '.join(tags)                
+
+    # rule 6: fixes year by appending 'in' before the word
+    def fix_year(self, words, tags):
+        i = 0
+        while i < len(words):
+            if tags[i] == 'CD':
+                if len(words[i]) == 4:
+                    print "len"
+                    words.insert(i, "in")
+                    tags.insert(i, "IN")
+                    if len(words) - 1 > i + 2:
+                        i += 1
+            i += 1
+        return words, tags
 
     # rule 4: word is not a noun if it has apostrophe s in it. should be adjective.
     def improve_pos(self, words, tags):
         for i, word in enumerate(words):
             if "'s" in word:
                 tags[i] = 'JJ'
+        return words, tags
 
     # rule 2: verb should go after the adverb if they are adjacent
     def fix_verb_adverb_pos(self, words, tags):
@@ -101,6 +117,7 @@ class MT:
                         tags[i] = adv_tag
                         words[i + 1] = words[i]
                         words[i] = adv_word
+        return words, tags
 
     # rule 5: verb (VBN) + preposition
     def fix_verb_preposition_pos(self, words, tags):
@@ -109,11 +126,30 @@ class MT:
                 if tags[i] == 'IN':
                     verb_tag = tags[i + 1]
                     verb_word = words[i + 1]
-                    if verb_tag == 'VBN':
+                    if verb_tag == 'VBN' or (verb_tag == 'JJ' and "ed" in verb_word):
                         tags[i + 1] = tags[i]
                         tags[i] = verb_tag
                         words[i + 1] = words[i]
                         words[i] = verb_word
+        return words, tags
+
+    def reorder_location(self, words, tags):
+        if "USA" in words:
+            country_index = words.index("USA")
+            if country_index < len(words) - 1 and words[country_index + 1] in self.states:
+                #state is after country, reorder
+                state = words[country_index + 1]
+                state_tag = tags[country_index + 1]
+                if words[country_index + 2] == "state":
+                    del words[country_index + 2]
+                    del tags[country_index + 2]
+                words[country_index] = state
+                words.insert(country_index + 1, ',')
+                tags[country_index + 2] = tags[country_index]
+                words[country_index + 2] = "USA"
+                tags[country_index] = state_tag
+                tags.insert(country_index + 1, ',')
+        return words, tags
 
     # rule 1: bring the verb at the end of sentence to the front
     def reorder_verb(self, words, tags):
@@ -143,29 +179,19 @@ class MT:
             if tag == 'VB' or tag == 'VBD' or tag == 'VBG' or tag == 'VBN' or tag == 'VBP' or tag == 'VBZ':
                 verb_start_index = tags.index(tag)
                 break
-        print "verb start index: %d" % verb_start_index
-        print "verb end index: %d" % verb_end_index
-
         subject_end_index = (0 if subject_end_index == 0 else subject_end_index + 1)
 
         # take out middle part of the sentence before reordering verb
-        middle_words = words[subject_end_index + 1: verb_start_index]
-        middle_tags = tags[subject_end_index + 1: verb_start_index]
+        middle_words = words[subject_end_index: verb_start_index]
+        middle_tags = tags[subject_end_index: verb_start_index]
 
         # move the verb to the front (after subject if subject is present)
-        new_words = []
-        new_tags = []
-
-
         verb_words = words[verb_start_index:verb_end_index]
         words[verb_start_index:verb_end_index] = ''
         words[subject_end_index:subject_end_index] = verb_words
         verb_tags = tags[verb_start_index:verb_end_index]
         tags[verb_start_index:verb_end_index] = ''
         tags[subject_end_index:subject_end_index] = verb_tags
-
-        print ' '.join(words)
-        print ' '.join(tags)
 
         # print "------------"
         # print middle_words
@@ -175,19 +201,20 @@ class MT:
         # print "verb index: %d" % verb_start_index
 
         if not verb_start_index == -1:
-            result.reorder_verb(middle_words, middle_tags)
+            middle_words, middle_tags = result.reorder_verb(middle_words, middle_tags)
 
-    def reorder_location(self, words):
-        if "USA" in words:
-            country_index = words.index("USA")
-            if country_index < len(words) - 1 and words[country_index+1] in self.states:
-                #state is after country, reorder
-                state = words[country_index+1]
-                if words[country_index+2] == "state":
-                    del words[country_index+2]
-                words[country_index] = state
-                words.insert(country_index+1, ',')
-                words[country_index+2] = "USA"
+        print middle_words
+        exit()
+
+        middle_words_start_index = subject_end_index + len(verb_tags)
+        words[middle_words_start_index:len(words)] = ''
+        tags[middle_words_start_index:len(tags)] = ''
+        words[middle_words_start_index:middle_words_start_index] = middle_words
+        tags[middle_words_start_index:middle_words_start_index] = middle_tags
+
+        # print ' '.join(words)
+        # print ' '.join(tags)
+        return words, tags
 
 def write(self):
         f = open('final2.txt', 'w+')

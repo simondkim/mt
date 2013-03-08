@@ -18,6 +18,7 @@ Becuase we used a wikipedia entry for our text, it uses very passive formal lang
 
 5. if the verb is followed by a preposition, move that with the verb too.
 
+6. if it sees a year (recognize it by four numbers), it appends a 'in' word at the before it.
 
 if there's an apostrophe or parentheses boundary, keep reordering within the boundaries. (PROBABLY NOT THE KIND OF RULE THEY ARE LOOKING FOR)
 
