@@ -24,6 +24,12 @@ Becuase we used a wikipedia entry for our text, it uses very passive formal lang
 
 8. if a noun is followed by verb and preposition, then reorder it so that it is verb + preposition + noun (object)
 
+9. Reorder location (state, country)
+In Korean, location is written from largest body to smallest, rather than smallest to largest in English. Also in Korean, for state locations, the word state is always appended right after, as in California state. So when we encounter USA followed by state name followed by state, we reorder, and remove the word state for the English translation.
+
+10. Insert article after "is"
+In Korean, simple helping verbs are bundled together within a single word with the object (noun). In our dictionary this behavior is translated as such. To add fluency, we check for cases in the translated sentence where "is" is followed by a singular noun, and insert the article "a" in between.
+
 if there's an apostrophe or parentheses boundary, keep reordering within the boundaries. (PROBABLY NOT THE KIND OF RULE THEY ARE LOOKING FOR)
 
 
@@ -35,8 +41,6 @@ Take the sentence, splice out the last verb which will almost always apply to th
 if two verbs next to each other, treat them as one (this comes up for the phrase 'is considered')
 
 
-6. Reorder location (state, country)
-In Korean, location is written from largest body to smallest, rather than smallest to largest in English. Also in Korean, for state locations, the word state is always appended right after, as in California state. So when we encounter USA followed by state name followed by state, we reorder, and remove the word state for the English translation.
 
 *Additional Notes
 We considered that after applying each rule to a sentence, to retag the entire sentence. However this would quickly become really messy and time consuming because it would be unclear when to stop.

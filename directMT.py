@@ -79,11 +79,13 @@ class MT:
             words, tags = result.fix_verb_preposition_pos(words, tags)
             words, tags = result.improve_pos2(words, tags)
             words, tags = result.reorder_verb(words, tags)
+            words, tags = result.insert_missing_articles(words, tags)
             words, tags = result.reorder_verb_object(words, tags)
 
             # print reordered results
             print ' '.join(words)
             print ' '.join(tags)                
+            exit()
 
     # rule 8: if a noun is followed by verb and preposition,
     # then reorder it so that it is verb + preposition + noun (object)
@@ -100,8 +102,7 @@ class MT:
                     print "len"
                     words.insert(i, "in")
                     tags.insert(i, "IN")
-                    if len(words) - 1 > i + 2:
-                        i += 1
+                    i += 1
             i += 1
         return words, tags
 
@@ -170,6 +171,18 @@ class MT:
                 tags.insert(country_index + 1, ',')
         return words, tags
 
+    def insert_missing_articles(self, words, tags):
+        i = 0
+        while i < len(words):
+            if words[i] == "is":
+                if tags[i+1] == "NN" or tags[i+1] == "NNP":
+                    print "INSERTING ARTICLE"
+                    words.insert(i+1, "a")
+                    tags.insert(i+1, "DT")
+                    i += 1
+            i += 1
+        return words, tags
+
     # rule 1: bring the verb at the end of sentence to the front
     def reorder_verb(self, words, tags):
 
@@ -200,6 +213,7 @@ class MT:
                 break
         subject_end_index = (0 if subject_end_index == 0 else subject_end_index + 1)
         if verb_start_index == -1:
+            print "NO VERBS FOUND, NO REORDERING OF VERBS TO BE DONE"
             return words, tags
 
     # take out middle part of the sentence before reordering verb
