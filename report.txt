@@ -3,10 +3,41 @@ HW 7 Report
 Simon Kim
 Kevin Luo
 
+We chose to translate from Korean to English, using the following document, taken from the Korean wikipedia entry for Stanford University:
 
-Becuase we used a wikipedia entry for our text, it uses very passive formal language. "is considered", "is located",
+릴런드 스탠퍼드 주니어 대학교는 1891년 릴런드 스탠퍼드에 의해 설립된 미국 캘리포니아 주에 위치한 연구 중심 사립 대학이다. 미국의 최고 명문 사립 대학 중 하나로 꼽히며, 학부 합격률 기준으로 미국에서 두번째로 입학하기 힘든 학교이다. 일반적으로 스탠퍼드 대학교라고 불린다.
+
+스탠퍼드 대학은 최상위권 우수 대학의 전통적인 진지함에다 캘리포니아 특유의 자유 분방함과 이국적인 정취가 혼합된 인기 높은 대학이다. 미국의 대부분 명문 대학에 비하면 설립 역사가 짧으나, '금세기의 가장 성공한 대학'으로 묘사되고 있을 만큼, 급속한 발전을 이룩한 학교이다.
+
+이 대학의 여러 학과들중 특히 이름난 분야들을 꼽는다면, 물리학, 경제학, 공학, 철학, 영어, 심리학, 정치학등을 들수 있겠으나, 그외에도 수많은 분야들이 톱클라스 그룹에 들어 있다. 스탠퍼드 대학은 대학원 과정과 전문대학원들의 비교에서도 미국의 최정상급을 차지하고 있다. 대학원의 영어, 경제, 역사, 정치학, 심리학, 사회학등이 특히 우수한 것으로 평가되고 있다. 또 전문대학원들 중에서는 경영대학원, 법학대학원, 의학대학원이 호평을 받고 있다.
+
+스탠퍼드는 세계적인 첨단 산업 기지인 실리콘 밸리가 학교 가까운 곳에 위치해 있어서, 교육과 연구에 더욱 많은 기회를 누릴 수 있는 학교이다. 실리콘 밸리의 구글, 야후, 휴렛 팩커드, 썬 마이크로시스템즈, 씨스코 시스템즈, 또한 스포츠 의류 회사 나이키 창업자가 모두 이 학교 출신이다.
+
+현재 9명의 노벨상 수상자와 11명의 미국 과학상 수상자들이 몸담고 있다. 스탠퍼드 대학은 샌프란시스코에서 약 50km 떨어진 인구 6만의 소도시 스탠퍼드에 자리하고 있다. 약 1백만평이나 되는 넓은 터를 차지한 이 학교는 수많은 종려나무와 지중해식 붉은 기와지붕의 나즈막한 건물들로, 이 학교만의 독특한 분위기를 형성하고 있으며, 학교라기보다 고급 리조트 같은 인상을 주는 캠퍼스를 보유한다.
+
+학부 재학생중 동양계 학생(동양계 미국인 및 유학생 포함)은 23%이다. 2007-8 학년도에 스탠퍼드로부터 입학통지서를 받은 외국인 학생들 중 35명이 한국 학생이었던 것으로 알려졌다. 스탠퍼드의 관문을 통과한 합격생들 중 90% 이상은 출신 고등학교에서 상위 10%에 들었던 우등생들이며, 전체의 75% 이상이 평균 학점 4.0 이 넘는 우수한 성적을 기록했다고 한다.
+
+Our system's translation:
 
 
+
+
+
+General Observations and Challenges
+===================================
+Because we used a wikipedia entry for our text, it uses very passive formal language. "is considered", "is located",
+
+the words that come after a korean word can change the form of that korean word, making translating directly very difficult, because it's hard to have a word-to-word dictionary mapping.
+
+Another problem we encountered is the sentence 23% is Asian, because a POS can't know to tag a number like 23% as functioning as a subject. The tag CD doesn't help us in reordering.
+
+
+In Korean there's often no direct translation of a word, but we must first distill it to a simpler form that does have a translation.
+
+
+
+Rules
+=====
 
 1. This rule is based on Korean being an SOV language whereas we are translating to English which is an SVO language. So whenever we encounter POS object (noun) followed by a verb, we will reverse the order of the two words.
 
@@ -16,6 +47,7 @@ Becuase we used a wikipedia entry for our text, it uses very passive formal lang
 
 4. to check if any noun is really a noun functioning as a subject, we check that it doesn't have apostrophe s, which would make it a adjective modifier.
 
+5. If a preposition is followed by a past particle verb, reverse the order. In Korean, often when you have a preposition with passive verb, the preposition comes before the verb, but in English we want the reverse. For example, this is seen in the direct Korean translation "by established". 
 5. if the verb is followed by a preposition, move that with the verb too.
 
 6. if it sees a year (recognize it by four numbers), it appends a 'in' word at the before it.
@@ -30,6 +62,13 @@ In Korean, location is written from largest body to smallest, rather than smalle
 10. Insert article after "is"
 In Korean, simple helping verbs are bundled together within a single word with the object (noun). In our dictionary this behavior is translated as such. To add fluency, we check for cases in the translated sentence where "is" is followed by a singular noun, and insert the article "a" in between.
 
+
+In Korean adjectives go before nouns as in English, so if we see a noun FOLLOWED by an adjective, we will assume that the POS tagger was unable to detect that that word was also probably functioning as an adjective. For example 
+
+In Korean adjectives have the same position relative to nouns as in English, that is right before nouns. So if we have adjective(s) that are NOT followed by a noun, reposition them to be placed right in front of the closest noun after them.
+
+In terms of determining where the subject ends for a sentence, we can pretty much assume that the if the sentence begins with a noun part, that noun part is the subject of the sentence, and NOT an object.
+
 if there's an apostrophe or parentheses boundary, keep reordering within the boundaries. (PROBABLY NOT THE KIND OF RULE THEY ARE LOOKING FOR)
 
 
@@ -40,15 +79,30 @@ Take the sentence, splice out the last verb which will almost always apply to th
 
 if two verbs next to each other, treat them as one (this comes up for the phrase 'is considered')
 
-
-
 *Additional Notes
-We considered that after applying each rule to a sentence, to retag the entire sentence. However this would quickly become really messy and time consuming because it would be unclear when to stop.
+We also considered that after applying each rule to a sentence, to retag the entire sentence. However this would quickly become really messy and time consuming because it would be unclear when to stop.
 
----- CHALLENGES -----
-the words that come after a korean word can change the form of that korean word, making translating directly very difficult, because it's hard to have a word-to-word dictionary mapping.
-
-Another problem we encountered is the sentence 23% is Asian, because a POS can't know to tag a number like 23% as functioning as a subject. The tag CD doesn't help us in reordering.
+Error Analysis
+==============
 
 
-In Korean there's often no direct translation of a word, but we must first distill it to a simpler form that does have a translation.
+Google Translate outputs:
+
+The Leland Stanford Junior University is a research-oriented private university, located in California, USA, was founded by Leland Stanford 1891 Reel Undergraduate pass rate is based in the United States is one of the most prestigious private universities in the United States, the second entrance to school is tough. Commonly referred to as Stanford University.
+
+Exoticism mixed with California's unique freedom of bunbangham popular Stanford University Excellence at the University of the traditional seriousness, plus top class high college. U.S. universities compared to the established history of percutaneous procedures, have been described as the most successful of the century, 'university', as most of the schools have achieved rapid development.
+
+In addition, numerous areas, especially the name of the university's Department of If I plug in the field of physics, economics, engineering, philosophy, English, psychology, political science, and tempted could, but in the top class group. Comparison of the graduate program and the Graduate School of Stanford University in the top class in the United States accounted for. Graduate School of English, economics, history, political science, psychology, sociology, etc. especially excellent are estimated. Graduate School of the Graduate School of Business, School of Law, School of Medicine, receiving rave reviews.
+
+Stanford in the global high-tech industry base in Silicon Valley, is located near the school, the school is that you can expect more opportunities in education and research. Silicon Valley Google, Yahoo, Hewlett-Packard, Sun Microsystems, ssiseu Systems, also all the sports apparel company Nike founder school.
+
+Body contains nine Nobel Prize winners and 11 people of the United States Science Award winners. At Stanford University and is located in the small town population was 60,000, about 50km away from San Francisco Stanford. Accounted for a large, approximately 1 baekmanpyeong or from school, the number of palm trees and Mediterranean red-tiled roof of the building as quietly, giving the impression formation and the unique atmosphere of this school, the school rather than a luxury resort campus retention.
+
+Of undergraduate students were Asians (including Asian Americans and international students) is only 23%. Of foreign students in the 2007-8 academic year, Stanford received the admission notice from Korea was a student reported that 35 people Passed the gates of the Stanford admitted more than 90% of the honors over a 4.0 grade point average, more than 75% of the entire record, that are heard in the top 10% in the former high school honors.
+
+Comparative Analysis
+====================
+
+
+
+Simon put together the dictionary, Kevin ran the POS tagger, and we both worked and debugged the rules together.
