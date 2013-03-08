@@ -141,7 +141,7 @@
 학교	school
 가까운	nearby
 곳에	place
-위치해	located
+위치해	located in
 있어서
 교육과	education
 연구에	research
@@ -153,7 +153,7 @@
 있는	can
 학교이다	is school
 실리콘	Silicon
-밸리의	Valley
+밸리의	Valley's
 구글	Google
 야후	Yahoo
 휴렛	Hewlett
@@ -172,7 +172,7 @@
 이	this
 학교	school
 출신이다	come from
-현재	current
+현재	currently
 9명의	9 people
 노벨상	Nobel
 수상자와 Laureate
@@ -192,11 +192,11 @@
 6만의	60,000 people
 소도시	small city
 스탠퍼드에	Stanford
-자리하고	located
-있다	be
+자리하고	located in
+있다	
 약	about
 1백만평이나	1 million pyeong
-되는	be
+되는	
 넓은	wide
 터를	ground
 차지한	win
@@ -214,7 +214,7 @@
 독특한	unique
 분위기를	atmosphere
 형성하고	form
-있으며	be
+있으며	
 학교라기보다	more than school
 고급	high-quality
 리조트	resort
