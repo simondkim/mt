@@ -69,9 +69,10 @@ class MT:
             print ' '.join(tags)
 
             result.improve_pos(words, tags)
-            result.reorder_verb(words, tags)
             result.fix_verb_adverb_pos(words, tags)
             result.fix_verb_preposition_pos(words, tags)
+            result.reorder_verb(words, tags)
+
 
             # print reordered results
             print ' '.join(words)
@@ -148,6 +149,10 @@ class MT:
         middle_tags = tags[subject_end_index + 1: verb_start_index]
 
         # move the verb to the front (after subject if subject is present)
+        new_words = []
+        new_tags = []
+
+
         verb_words = words[verb_start_index:verb_end_index]
         words[verb_start_index:verb_end_index] = ''
         words[subject_end_index:subject_end_index] = verb_words
@@ -155,15 +160,20 @@ class MT:
         tags[verb_start_index:verb_end_index] = ''
         tags[subject_end_index:subject_end_index] = verb_tags
 
-        print "------------"
-        print middle_words
-        print middle_tags
-        print "------------"
+        print ' '.join(words)
+        print ' '.join(tags)
 
-        print "verb index: %d" % verb_start_index
+        # print "------------"
+        # print middle_words
+        # print middle_tags
+        # print "------------"
+
+        # print "verb index: %d" % verb_start_index
 
         if not verb_start_index == -1:
             result.reorder_verb(middle_words, middle_tags)
+
+
 
 def write(self):
         f = open('final2.txt', 'w+')
