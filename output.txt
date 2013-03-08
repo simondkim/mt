@@ -14,7 +14,7 @@
 미국	USA
 캘리포니아	California
 주에	state
-위치한	located
+위치한	located in
 연구	research
 중심	center
 사립	private
@@ -141,7 +141,7 @@
 학교	school
 가까운	nearby
 곳에	place
-위치해	located
+위치해	located in
 있어서
 교육과	education
 연구에	research
@@ -192,7 +192,7 @@
 6만의	60,000 people
 소도시	small city
 스탠퍼드에	Stanford
-자리하고	located
+자리하고	located in
 있다	be
 약	about
 1백만평이나	1 million pyeong
