@@ -45,10 +45,8 @@ class MT:
                 words = sentence.split()
                 if not len(words) == 0:
                     for word in words:
-                        # print word
                         if self.dictionary.has_key(word):
                             if not len(word) == 0:
-                                # print self.dictionary[word]
                                 for translated_word in self.dictionary[word]:
                                     translated.append(translated_word)
                     translated.append(".")
@@ -66,16 +64,16 @@ class MT:
             words = [tuple[0] for tuple in sentence]
             self.final_output += ' '.join(words)
             self.final_output += "\n"
-            print ' '.join(words)
+            # print ' '.join(words)
             tags = [tuple[1] for tuple in sentence]
             self.final_output += ' '.join(tags)
             self.final_output += "\n"
-            print ' '.join(tags)
+            # print ' '.join(tags)
 
             words, tags = result.improve_pos(words, tags)
             words, tags = result.fix_year(words, tags)
             words, tags = result.reorder_location(words, tags)
-            #words, tags = result.fix_verb_adverb_pos(words, tags)
+            words, tags = result.fix_verb_adverb_pos(words, tags)
             words, tags = result.fix_verb_preposition_pos(words, tags)
             words, tags = result.improve_pos2(words, tags)
             words, tags = result.fix_adj_pos(words, tags)
@@ -83,10 +81,15 @@ class MT:
             words, tags = result.reorder_verb_prep_object(words, tags)
             words, tags = result.insert_missing_articles(words, tags)
             words, tags = result.fix_verb_adverb_pos(words, tags)
+            words, tags = result.modal_verb(words, tags)
+            if (tags[0] == 'VB' or tags[0] == 'VBD' or tags[0] == 'VBG'
+                or tags[0] == 'VBN' or tags[0] == 'VBP' or tags[0] == 'VBZ'):
+                words.insert(0, "It")
+            words[0] = words[0].title()
 
             # print reordered results
             print ' '.join(words)
-            print ' '.join(tags)                
+            # print ' '.join(tags)
 
     def find_noun_chunk_from_behind(self, end_index, tags):
         start_index = end_index
@@ -111,7 +114,8 @@ class MT:
                 break
         return start_index
 
-    # if the sentence has comma followed by adverb or modal (e.g. , furthermore) or preceded by verb, then treat it as a sub-sentence
+    # if the sentence has comma followed by adverb or modal (e.g. , furthermore) or preceded by verb,
+    # then treat it as a sub-sentence
     def find_start_sub_sentence(self, tags):
         start_index = 0
         for i, tag in enumerate(tags):
@@ -188,7 +192,7 @@ class MT:
                     or tags[i] == 'VBN' or tags[i] == 'VBP' or tags[i] == 'VBZ'):
                     adv_tag = tags[i + 1]
                     adv_word = words[i + 1]
-                    if adv_tag == 'RB' or adv_tag == 'RBR' or adv_tag == 'RBS':
+                    if (adv_tag == 'RB' or adv_tag == 'RBR' or adv_tag == 'RBS') and not words[i + 1] == "especially":
                         tags[i + 1] = tags[i]
                         tags[i] = adv_tag
                         words[i + 1] = words[i]
@@ -256,7 +260,7 @@ class MT:
         # find the end index of subject
         if tags[0] == 'JJ' and not (tags[1] == 'NN' or tags[1] == 'NNP' or tags[1] == 'NNS'):
             return -1, 0
-        if (tags[0] == 'NN' or tags[0] == 'NNS' or tags[0] == 'NNP' or tags[0] == 'NNPS' or tags[0] == 'JJ'):
+        if tags[0] == 'NN' or tags[0] == 'NNS' or tags[0] == 'NNP' or tags[0] == 'NNPS' or tags[0] == 'JJ':
             while end_index < len(tags) - 1:
                 if (tags[end_index + 1] == 'NN' or tags[end_index + 1] == 'NNS' or tags[end_index + 1] == 'NNP'
                     or tags[end_index + 1] == 'NNPS' or tags[end_index + 1] == 'JJ' or tags[0] == 'JJR'
@@ -272,6 +276,19 @@ class MT:
             start_index = -1
         return start_index, end_index
 
+    def modal_verb(self, words, tags):
+        for i, tag in enumerate(tags):
+            if tag == "MD" and i - 1 >= 0:
+                if (tags[i -1] == 'VB' or tags[i - 1] == 'VBD' or tags[i - 1] == 'VBG'
+                        or tags[i -1] == 'VBN' or tags[i -1] == 'VBP' or tags[i - 1] == 'VBZ'):
+                    prev_tag = tags[i - 1]
+                    tags[i - 1] = 'MD'
+                    prev_word = words[i - 1]
+                    words[i - 1] = words[i]
+                    words[i] = prev_word
+                    tags[i] = prev_tag
+        return words, tags
+
     # rule 1: bring the verb at the end of sentence to the front
     def reorder_verb(self, words, tags):
 
@@ -286,23 +303,14 @@ class MT:
         verb_start_index = -1
         for i, tag in reversed(list(enumerate(tags))):
             if tag == 'VB' or tag == 'VBD' or tag == 'VBG' or tag == 'VBN' or tag == 'VBP' or tag == 'VBZ':
-                #verb_start_index = self.find_verb_chunk_from_behind(i, tags)
-                verb_start_index = i
+                if not tag == 'VBZ':
+                    verb_start_index = self.find_verb_chunk_from_behind(i, tags)
+                else:
+                    verb_start_index = i
                 break
         subject_end_index = (0 if subject_start_index == -1 else subject_end_index + 1)
-        print "SUBJECT END INDEX: ", subject_end_index
         if verb_start_index == -1:
             return words, tags
-
-        # move the verb to the front (after subject if subject is present)
-        # change the sentence's last word following the verb to be a sentinel to mean the end of verb.
-        #tags[len(tags) - 2] = 'None'
-        """verb_words = words[verb_start_index:len(words) - 1]
-        words[verb_start_index:len(words)] = ''
-        words[subject_end_index:subject_end_index] = verb_words
-        verb_tags = tags[verb_start_index:len(tags) - 1]
-        tags[verb_start_index:len(tags)] = ''
-        tags[subject_end_index:subject_end_index] = verb_tags"""
 
         middle_words = words[subject_end_index: verb_start_index]
         middle_tags = tags[subject_end_index: verb_start_index]
@@ -314,6 +322,9 @@ class MT:
         new_tags = tags[:subject_end_index]
         new_tags += tags[verb_start_index:-1]
         new_tags += middle_tags
+        verb_end_index = subject_end_index + len(tags) - verb_start_index - 2
+        if not verb_end_index == 0:
+            new_tags[verb_end_index] = 'None'
         new_tags += ["."]
 
         return new_words, new_tags
@@ -325,10 +336,9 @@ def write(self):
 
 if __name__ == '__main__':
     dict = 'output.txt'
-    text = 'text2.txt'
+    text = 'text.txt'
 
     result = MT(dict)
     result.translate(text)
     result.tagPOS()
     result.reorder()
-    # result.write()

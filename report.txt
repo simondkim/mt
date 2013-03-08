@@ -34,6 +34,7 @@ Another problem we encountered is the sentence 23% is Asian, because a POS can't
 
 In Korean there's often no direct translation of a word, but we must first distill it to a simpler form that does have a translation.
 
+Korean specific unit is used in this article, which is impossible to translate.
 
 
 Rules
@@ -63,6 +64,8 @@ In Korean, location is written from largest body to smallest, rather than smalle
 In Korean, simple helping verbs are bundled together within a single word with the object (noun). In our dictionary this behavior is translated as such. To add fluency, we check for cases in the translated sentence where "is" is followed by a singular noun, and insert the article "a" in between.
 
 11. In Korean, multiple sentences can be appended by a comma, so in looking for the subject for a verb to follow, we see if there exists a 'sub-sentence'.
+
+12. modal should come before verb
 
 In Korean adjectives go before nouns as in English, so if we see a noun FOLLOWED by an adjective, we will assume that the POS tagger was unable to detect that that word was also probably functioning as an adjective. For example 
 

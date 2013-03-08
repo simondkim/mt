@@ -105,7 +105,7 @@
 대학원	graduate
 과정과	program
 전문대학원들의	professional school
-비교에서도	compare
+비교에서도	compared to
 미국의	America's
 최정상급을	top class
 차지하고	win
@@ -224,7 +224,7 @@
 캠퍼스를	campus
 보유한다	has
 학부	undergraduate
-재학생중	enrolled students
+재학생중	of the enrolled students
 동양계	Asian
 학생(동양계	student(Asian American
 미국인
@@ -263,8 +263,7 @@
 이상이	more
 평균	average
 학점	GPA
-4.0	4.0
-이
+4.0이	4.0
 넘는	exceed
 우수한	excellent
 성적을	grade
