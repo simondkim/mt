@@ -20,6 +20,10 @@ Becuase we used a wikipedia entry for our text, it uses very passive formal lang
 
 6. if it sees a year (recognize it by four numbers), it appends a 'in' word at the before it.
 
+7. if a word is adjective and contains 'ed', then is probably a verb past participle, so we fix the pos tag to be VBN for better result.
+
+8. if a noun is followed by verb and preposition, then reorder it so that it is verb + preposition + noun (object)
+
 if there's an apostrophe or parentheses boundary, keep reordering within the boundaries. (PROBABLY NOT THE KIND OF RULE THEY ARE LOOKING FOR)
 
 

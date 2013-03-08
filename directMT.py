@@ -77,11 +77,19 @@ class MT:
             words, tags = result.reorder_location(words, tags)
             words, tags = result.fix_verb_adverb_pos(words, tags)
             words, tags = result.fix_verb_preposition_pos(words, tags)
-            # words, tags = result.reorder_verb(words, tags)
+            words, tags = result.improve_pos2(words, tags)
+            words, tags = result.reorder_verb(words, tags)
+            words, tags = result.reorder_verb_object(words, tags)
 
             # print reordered results
             print ' '.join(words)
             print ' '.join(tags)                
+
+    # rule 8: if a noun is followed by verb and preposition,
+    # then reorder it so that it is verb + preposition + noun (object)
+    def reorder_verb_object(self, words, tags):
+
+        return words, tags
 
     # rule 6: fixes year by appending 'in' before the word
     def fix_year(self, words, tags):
@@ -102,6 +110,17 @@ class MT:
         for i, word in enumerate(words):
             if "'s" in word:
                 tags[i] = 'JJ'
+        return words, tags
+
+    # rule 7: if a word is adjective and contains 'ed', then is probably a verb past participle,
+    # so we fix the pos tag to be VBN for better result.
+    # this function has to come after rearranging verb and prepositions.
+    def improve_pos2(self, words, tags):
+        for i, word in enumerate(words):
+            if tags[i] == 'JJ' and "ed" in word:
+                if i + 1 < len(tags):
+                    if tags[i + 1] == 'IN':
+                        tags[i] = 'VBN'
         return words, tags
 
     # rule 2: verb should go after the adverb if they are adjacent
@@ -155,7 +174,7 @@ class MT:
     def reorder_verb(self, words, tags):
 
         if len(words) == 0 or len(tags) == 0:
-            return
+            return words, tags
 
         # check if subject is present in the sentence
         subject_start_index = 0
@@ -180,8 +199,10 @@ class MT:
                 verb_start_index = tags.index(tag)
                 break
         subject_end_index = (0 if subject_end_index == 0 else subject_end_index + 1)
+        if verb_start_index == -1:
+            return words, tags
 
-        # take out middle part of the sentence before reordering verb
+    # take out middle part of the sentence before reordering verb
         middle_words = words[subject_end_index: verb_start_index]
         middle_tags = tags[subject_end_index: verb_start_index]
 
@@ -193,28 +214,21 @@ class MT:
         tags[verb_start_index:verb_end_index] = ''
         tags[subject_end_index:subject_end_index] = verb_tags
 
-        # print "------------"
         # print middle_words
-        # print middle_tags
-        # print "------------"
 
-        # print "verb index: %d" % verb_start_index
+        # if not verb_start_index == -1:
+        #     middle_words, middle_tags = result.reorder_verb(middle_words, middle_tags)
 
-        if not verb_start_index == -1:
-            middle_words, middle_tags = result.reorder_verb(middle_words, middle_tags)
-
-        print middle_words
-        exit()
-
-        middle_words_start_index = subject_end_index + len(verb_tags)
-        words[middle_words_start_index:len(words)] = ''
-        tags[middle_words_start_index:len(tags)] = ''
-        words[middle_words_start_index:middle_words_start_index] = middle_words
-        tags[middle_words_start_index:middle_words_start_index] = middle_tags
+        # middle_words_start_index = subject_end_index + len(verb_tags)
+        # words[middle_words_start_index:len(words)] = ''
+        # tags[middle_words_start_index:len(tags)] = ''
+        # words[middle_words_start_index:middle_words_start_index] = middle_words
+        # tags[middle_words_start_index:middle_words_start_index] = middle_tags
 
         # print ' '.join(words)
         # print ' '.join(tags)
         return words, tags
+
 
 def write(self):
         f = open('final2.txt', 'w+')

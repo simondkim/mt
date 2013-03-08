@@ -46,7 +46,7 @@
 대학의	university
 전통적인	traditional
 진지함에다	serious
-캘리포니아	California
+캘리포니아	california
 특유의	unique
 자유	free
 분방함과	wild
@@ -141,7 +141,7 @@
 학교	school
 가까운	nearby
 곳에	place
-위치해	located in
+위치해	located
 있어서
 교육과	education
 연구에	research
@@ -192,7 +192,7 @@
 6만의	60,000 people
 소도시	small city
 스탠퍼드에	Stanford
-자리하고	located in
+자리하고	located
 있다	be
 약	about
 1백만평이나	1 million pyeong
