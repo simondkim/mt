@@ -91,6 +91,7 @@ class MT:
             print ' '.join(words)
             # print ' '.join(tags)
 
+    # find the biggest chunk of noun given an end index of the noun
     def find_noun_chunk_from_behind(self, end_index, tags):
         start_index = end_index
         while start_index >= 0:
@@ -103,6 +104,7 @@ class MT:
                 break
         return start_index, end_index
 
+    # find the biggest chunk of verb given an end index of the verb
     def find_verb_chunk_from_behind(self, end_index, tags):
         start_index = end_index
         while start_index >= 0:
@@ -114,6 +116,7 @@ class MT:
                 break
         return start_index
 
+    # rule 11: Korean language can have two sentences appended by a comma.
     # if the sentence has comma followed by adverb or modal (e.g. , furthermore) or preceded by verb,
     # then treat it as a sub-sentence
     def find_start_sub_sentence(self, tags):
@@ -138,8 +141,6 @@ class MT:
                             noun_start_index, noun_end_index = self.find_noun_chunk_from_behind(i - 1, tags)
                             noun_start_index = (noun_min_index if noun_start_index < noun_min_index
                                                 else noun_start_index)
-                            # print words
-                            # print tags
                             verb_prep_word = words[i: i + 2]
                             verb_prep_tag = tags[i: i + 2]
                             words[i: i + 2] = ''
@@ -147,11 +148,6 @@ class MT:
                             words[noun_start_index:noun_start_index] = verb_prep_word
                             tags[noun_start_index:noun_start_index] = verb_prep_tag
                             noun_min_index = i + 2
-                            # print "--------------"
-                            # print words
-                            # print tags
-                            # print noun_min_index
-                            # print "--------------"
         return words, tags
 
     # rule 6: fixes year by appending 'in' before the word
@@ -213,6 +209,7 @@ class MT:
                         words[i] = verb_word
         return words, tags
 
+    # rule 3: fix the position of adjective relative to verb (adj + verb)
     def fix_adj_pos(self, words, tags):
         for i, tag in enumerate(tags):
             if tag == "JJ" and i + 1 < len(tags):
@@ -223,6 +220,7 @@ class MT:
                     tags[i] = 'VBZ'
         return words, tags
 
+    # rule 9: Reorder location (state, country)
     def reorder_location(self, words, tags):
         if "USA" in words:
             country_index = words.index("USA")
@@ -234,13 +232,12 @@ class MT:
                     del words[country_index + 2]
                     del tags[country_index + 2]
                 words[country_index] = state
-                # words.insert(country_index + 1, ',')
                 tags[country_index + 1] = tags[country_index]
                 words[country_index + 1] = "USA"
                 tags[country_index] = state_tag
-                # tags.insert(country_index + 1, ',')
         return words, tags
 
+    # rule 10: Insert 'a' after 'is'.
     def insert_missing_articles(self, words, tags):
         i = 0
         while i < len(words):
@@ -276,6 +273,7 @@ class MT:
             start_index = -1
         return start_index, end_index
 
+    # rule 12: Change the relative position of modal to verb (change to modal + verb from verb + modal)
     def modal_verb(self, words, tags):
         for i, tag in enumerate(tags):
             if tag == "MD" and i - 1 >= 0:
@@ -328,7 +326,6 @@ class MT:
         new_tags += ["."]
 
         return new_words, new_tags
-
 
 def write(self):
         f = open('final2.txt', 'w+')

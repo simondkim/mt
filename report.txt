@@ -5,6 +5,7 @@ Kevin Luo
 
 We chose to translate from Korean to English, using the following document, taken from the Korean wikipedia entry for Stanford University:
 
+
 릴런드 스탠퍼드 주니어 대학교는 1891년 릴런드 스탠퍼드에 의해 설립된 미국 캘리포니아 주에 위치한 연구 중심 사립 대학이다. 미국의 최고 명문 사립 대학 중 하나로 꼽히며, 학부 합격률 기준으로 미국에서 두번째로 입학하기 힘든 학교이다. 일반적으로 스탠퍼드 대학교라고 불린다.
 
 스탠퍼드 대학은 최상위권 우수 대학의 전통적인 진지함에다 캘리포니아 특유의 자유 분방함과 이국적인 정취가 혼합된 인기 높은 대학이다. 미국의 대부분 명문 대학에 비하면 설립 역사가 짧으나, '금세기의 가장 성공한 대학'으로 묘사되고 있을 만큼, 급속한 발전을 이룩한 학교이다.
@@ -16,6 +17,7 @@ We chose to translate from Korean to English, using the following document, take
 현재 9명의 노벨상 수상자와 11명의 미국 과학상 수상자들이 몸담고 있다. 스탠퍼드 대학은 샌프란시스코에서 약 50km 떨어진 인구 6만의 소도시 스탠퍼드에 자리하고 있다. 약 1백만평이나 되는 넓은 터를 차지한 이 학교는 수많은 종려나무와 지중해식 붉은 기와지붕의 나즈막한 건물들로, 이 학교만의 독특한 분위기를 형성하고 있으며, 학교라기보다 고급 리조트 같은 인상을 주는 캠퍼스를 보유한다.
 
 학부 재학생중 동양계 학생(동양계 미국인 및 유학생 포함)은 23%이다. 2007-8 학년도에 스탠퍼드로부터 입학통지서를 받은 외국인 학생들 중 35명이 한국 학생이었던 것으로 알려졌다. 스탠퍼드의 관문을 통과한 합격생들 중 90% 이상은 출신 고등학교에서 상위 10%에 들었던 우등생들이며, 전체의 75% 이상이 평균 학점 4.0이 넘는 우수한 성적을 기록했다고 한다.
+
 
 Our system's translation:
 
@@ -40,16 +42,15 @@ Korean specific unit is used in this article, which is impossible to translate.
 Rules
 =====
 
-1. This rule is based on Korean being an SOV language whereas we are translating to English which is an SVO language. So whenever we encounter POS object (noun) followed by a verb, we will reverse the order of the two words.
+1. This rule is based on Korean being an SOV language whereas we are translating to English which is an SVO language. So whenever we encounter POS object (noun) followed by a verb, we will reverse the order of the two words. In terms of determining where the subject ends for a sentence, we can pretty much assume that the if the sentence begins with a noun part, that noun part is the subject of the sentence, and NOT an object. The last verb that occurs in the sentence will almost always apply to the beginning of the sentence, and thus we will reorder as such. Take the sentence, splice out the last verb which will almost always apply to the beginning. Then we separate the sentence into the smallest sentence phrases and reorder within these phrases, and then join them back together. If two verbs next to each other, treat them as one (this comes up for the phrase 'is considered')
 
 2. When you are reordering the verb, consider it's relative position to adverbs to make sure to place the verb right after the adverb.
 
-3. When you are reordering the noun, consider it's relative position to adjectives to make sure to place the noun after the adjectives.
+3. In Korean adjectives have the same position relative to nouns as in English, that is right before nouns. So if we have adjective(s) that are NOT followed by a noun, reposition them to be placed right in front of the closest noun after them.
 
-4. to check if any noun is really a noun functioning as a subject, we check that it doesn't have apostrophe s, which would make it a adjective modifier.
+4. To check if any noun is really a noun functioning as a subject, we check that it doesn't have apostrophe s, which would make it a adjective modifier.
 
-5. If a preposition is followed by a past particle verb, reverse the order. In Korean, often when you have a preposition with passive verb, the preposition comes before the verb, but in English we want the reverse. For example, this is seen in the direct Korean translation "by established". 
-5. if the verb is followed by a preposition, move that with the verb too.
+5. If a preposition is followed by a past particle verb, reverse the order. In Korean, often when you have a preposition with passive verb, the preposition comes before the verb, but in English we want the reverse. For example, this is seen in the direct Korean translation "by established". If the verb is followed by a preposition, move that with the verb too.
 
 6. if it sees a year (recognize it by four numbers), it appends a 'in' word at the before it.
 
@@ -57,38 +58,37 @@ Rules
 
 8. if a noun is followed by verb and preposition, then reorder it so that it is verb + preposition + noun (object)
 
-9. Reorder location (state, country)
-In Korean, location is written from largest body to smallest, rather than smallest to largest in English. Also in Korean, for state locations, the word state is always appended right after, as in California state. So when we encounter USA followed by state name followed by state, we reorder, and remove the word state for the English translation.
+9. Reorder location (state, country). In Korean, location is written from largest body to smallest, rather than smallest to largest in English. Also in Korean, for state locations, the word state is always appended right after, as in California state. So when we encounter USA followed by state name followed by state, we reorder, and remove the word state for the English translation.
 
-10. Insert article after "is"
-In Korean, simple helping verbs are bundled together within a single word with the object (noun). In our dictionary this behavior is translated as such. To add fluency, we check for cases in the translated sentence where "is" is followed by a singular noun, and insert the article "a" in between.
+10. Insert article after "is". In Korean, simple helping verbs are bundled together within a single word with the object (noun). In our dictionary this behavior is translated as such. To add fluency, we check for cases in the translated sentence where "is" is followed by a singular noun, and insert the article "a" in between.
 
 11. In Korean, multiple sentences can be appended by a comma, so in looking for the subject for a verb to follow, we see if there exists a 'sub-sentence'.
 
-12. modal should come before verb
+12. Modal (can) should come before verb. In Korean, verb often comes before modal, whereas in English it is the opposite.
 
-In Korean adjectives go before nouns as in English, so if we see a noun FOLLOWED by an adjective, we will assume that the POS tagger was unable to detect that that word was also probably functioning as an adjective. For example 
+13. we use commas for boundaries for reordering, and also iteratively rearrange verb placement similar to a tree structure.
 
-In Korean adjectives have the same position relative to nouns as in English, that is right before nouns. So if we have adjective(s) that are NOT followed by a noun, reposition them to be placed right in front of the closest noun after them.
-
-In terms of determining where the subject ends for a sentence, we can pretty much assume that the if the sentence begins with a noun part, that noun part is the subject of the sentence, and NOT an object.
-
-
-if there's an apostrophe or parentheses boundary, keep reordering within the boundaries. (PROBABLY NOT THE KIND OF RULE THEY ARE LOOKING FOR)
-
-
-we use commas for boundaries for reordering, and also iteratively rearrange verb placement similar to a tree structure.
-
-the last verb that occurs in the sentence will almost always apply to the beginning of the sentence, and thus we will reorder as such.
-Take the sentence, splice out the last verb which will almost always apply to the beginning. Then we separate the sentence into the smallest sentence phrases and reorder within these phrases, and then join them back together.
-
-if two verbs next to each other, treat them as one (this comes up for the phrase 'is considered')
-
-*Additional Notes
+* Additional Notes:
 We also considered that after applying each rule to a sentence, to retag the entire sentence. However this would quickly become really messy and time consuming because it would be unclear when to stop.
+
 
 Error Analysis
 ==============
+
+- Even though it correctly positions verb and prepositions/adjectives relative to each other, their overall position within the sentence is not guaranteed to be correct. For example, 'in 1891' should come after 'established by Leland Stanford'. In order for this to work, it will have to recognize not only the pos of each word but also its implied meaning.
+- Since Korean language has lots of variation for a word depending on the context, it is hard to match the word with correct English translation without contextual knowledge. For example, 'research center' is understood to mean in Korean 'research-focused'. However, since our dictionary only considers direct unigram translation, we lose the knowledge that it should actually be adjective together. We would have not only use a much more sophisticated dictionary that has all the variations of a word but also have to use bigram/trigram definitions to improve the result.
+- Verbs for the phrases within a sentence should correctly position itself to the front of the phrase considering the relative position to the implied subject and object of the phrase. However, since we do not take into account the holistic syntax of the sentence, we are unable to derive the boundaries of larger phrases within a sentence. For example, 'this school's unique atmosphere form' should really have its verb 'form' come after the subject of the phrase 'palm trees... red tiled roof low building'.
+- Modifiers for the whole sentence (e.g. 'of the enrolled students') should be recognized to be functioning as adverb and pulled to the very beginning of the sentence. This would require that we have better understanding of the syntax of the sentence.
+- Predeterminers should be able to find a corresponding verb or noun form that precedes it. For example, 'come from all' should be 'all come from'. In order to fix this, there should be a rule that includes predeterminer in the larger set of words that form verb, so that when the verb moves, the predeterminer also moves.
+- Plurality of words is implied in Korean words without explicitly having a plural word form, but in English such meaning is lost in word by word translation. For example, 'best prestigious private university' should be 'best prestigious private universities' because it is associated with the phrase 'among one of' which implies the plurality of the noun 'university'. In order to fix this, we would need to be able to extract the contextual meaning of the phrase/sentence to understand that it should be plural.
+- Our translation misses the implied prepositions that come within a word in translating to the corresponding English word. For example, 'population 60,000' should be 'with population 60,000'. Since the slight variation of a character at the end of a word in Korean contains the implied preposition and its relationship to the rest of the sentence, we need better rule and larger dictionary to be able to account for the nuances that can translate not only the word itself but also the prepositions that come with it.
+
+Further work to be done:
+- In Korean adjectives go before nouns as in English, so if we see a noun FOLLOWED by an adjective, we will assume that the POS tagger was unable to detect that that word was also probably functioning as an adjective.
+- Using a tree structure, separate the sentence that contains multiple sub-sentences into pieces and recursively apply the rules. Right now, our rules apply up to two sub-sentences concatenated together.
+- Run a pos tagger on Korean as well to extract out the syntax information of the original sentence to improve the quality of not only the translation but also reordering in English.
+- Improve the rules that identify larger chunks of subject and verb so that reordering is done more precisely closer to the form of Korean language. Rules will contain more edge cases that will identify which is a extension of noun as subject and for verb as well.
+
 
 
 Google Translate outputs:
@@ -105,8 +105,11 @@ Body contains nine Nobel Prize winners and 11 people of the United States Scienc
 
 Of undergraduate students were Asians (including Asian Americans and international students) is only 23%. Of foreign students in the 2007-8 academic year, Stanford received the admission notice from Korea was a student reported that 35 people Passed the gates of the Stanford admitted more than 90% of the honors over a 4.0 grade point average, more than 75% of the entire record, that are heard in the top 10% in the former high school honors.
 
+
+
 Comparative Analysis
 ====================
+
 
 
 
